@@ -13,8 +13,35 @@
     tools:context="com.example.dio_v.killapay.MainActivity"
     tools:showIn="@layout/activity_main">
 
-    <TextView
-        android:layout_width="wrap_content"
+
+    <RelativeLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Hello World!"/>
+        android:layout_centerHorizontal="true"
+        android:padding="50dp">
+
+        <ImageView
+            android:id="@+id/appIcon"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginRight="20dp"/>
+
+        <TextView
+            android:id="@+id/appName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/appIcon"
+            android:text="Application not install!"
+            android:textSize="20sp"/>
+
+        <TextView
+            android:id="@+id/processInfo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/appIcon"
+            android:layout_toRightOf="@id/appIcon"/>
+
+    </RelativeLayout>
+
+
 </RelativeLayout>
