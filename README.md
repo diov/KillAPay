@@ -1,6 +1,9 @@
 KillAxxPay
 
-- An Entry to KIll AxxPay Service
-- Auto Stop Process of AxxPay
+- Classical Toy App.
+- An Entry to KIll AxxPay Service.
+- Auto Stop Process of AxxPay.
 
-not work in API 22( LOLIPOP ).
+> Use AccessibleService to finish the work.
+
+*not work well in API 22( LOLIPOP ).*
