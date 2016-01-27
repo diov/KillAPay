@@ -1,5 +1,6 @@
 package com.example.dio_v.killapay.util;
 
+import android.app.ActivityManager;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
@@ -16,6 +17,13 @@ import java.util.List;
  */
 public class AppHelper {
 
+    /**
+     * 获取带有指定字段的包名
+     *
+     * @param context 上下文
+     * @param s       指定的字段
+     * @return 包名
+     */
     public static String getPackageName(Context context, CharSequence s) {
 
         PackageManager packageManager = context.getPackageManager();
@@ -31,6 +39,13 @@ public class AppHelper {
         return "";
     }
 
+    /**
+     * 获取应用信息
+     *
+     * @param context     上下文
+     * @param packageName 指定的包名
+     * @return 应用信息
+     */
     public static AppInfo getAppInfo(Context context, String packageName) {
         PackageManager packageManager = context.getPackageManager();
 
@@ -53,4 +68,23 @@ public class AppHelper {
         return appInfo;
     }
 
+
+    /**
+     * 带有指定字段的服务是否开启
+     *
+     * @param context 上下文
+     * @param pkgName 指定的字段
+     * @return 是否开启
+     */
+    public static boolean isServiceRunning(Context context, String pkgName) {
+        ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningServiceInfo> runningServiceInfos = activityManager.getRunningServices(100);
+        for (ActivityManager.RunningServiceInfo runningServiceInfo : runningServiceInfos) {
+            String name = runningServiceInfo.process;
+            if (name.contains(pkgName)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

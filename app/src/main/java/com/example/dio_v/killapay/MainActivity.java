@@ -24,11 +24,11 @@ public class MainActivity extends AppCompatActivity {
     private static final String APP_NAME = "Alipay";
     private String packageName;
     private boolean isInstall;
+    private boolean isRunning;
     private AppInfo appInfo;
     private TextView appName;
     private ImageView appIcon;
-    private TextView processInfo;
-    private String memory;
+    private TextView runningInfo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,14 +37,11 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         appName = (TextView) findViewById(R.id.appName);
-        processInfo = (TextView) findViewById(R.id.processInfo);
+        runningInfo = (TextView) findViewById(R.id.runningInfo);
         appIcon = (ImageView) findViewById(R.id.appIcon);
 
         // 判断是否存在应用
         isInstalled();
-
-        // 判断应用是否运行
-
 
         // 根据应用是否存在，是否运行初始化View
         initView();
@@ -54,26 +51,45 @@ public class MainActivity extends AppCompatActivity {
         appInfo = AppHelper.getAppInfo(this, packageName);
         appName.setText(appInfo.getName());
         appIcon.setImageDrawable(appInfo.getIcon());
-        if (isInstall) {
-            processInfo.setText(memory);
+        if (isRunning) {
+            runningInfo.setText("后台正在运行");
         }
 
+        //FAB的点击事件
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (isInstall) {
-                    // 根据包名跳转系统自带的应用程序信息界面,并自动关闭
-                    jumpDetailInfo(packageName);
+                    if (isRunning) {
+                        if (!AppHelper.isServiceRunning(MainActivity.this, getPackageName())) {
+                            Snackbar.make(view, "服务未开启,请打开", Snackbar.LENGTH_SHORT).setAction("打开",
+                                    new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            openAccessibleSetting();
+                                        }
+                                    }).show();
+                        } else {
+                            // 根据包名跳转系统自带的应用程序信息界面,并自动关闭
+                            jumpDetailInfo(packageName);
+                        }
+                    } else {
+                        Snackbar.make(view, "后台未运行,无需关闭", Snackbar.LENGTH_SHORT).show();
+                    }
                 } else {
-                    Snackbar.make(view, "App not installed", Snackbar.LENGTH_SHORT)
-                            .setAction("Action", null).show();
+                    Snackbar.make(view, "应用未安装", Snackbar.LENGTH_SHORT).show();
                 }
 
             }
         });
     }
 
+    /**
+     * 跳转到应用详情页面
+     *
+     * @param packageName 指定应用的包名
+     */
     private void jumpDetailInfo(String packageName) {
         ForcecloseAccessibilityService.INVOKE_TYPE = ForcecloseAccessibilityService.INVOKE_KILL;
         Intent i = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
@@ -81,13 +97,13 @@ public class MainActivity extends AppCompatActivity {
         startActivity(i);
     }
 
-
     private void isInstalled() {
         packageName = AppHelper.getPackageName(this, APP_NAME);
         if (TextUtils.isEmpty(packageName)) {
             isInstall = false;
         } else {
             isInstall = true;
+            isRunning = AppHelper.isServiceRunning(this, APP_NAME);
         }
     }
 
@@ -102,9 +118,18 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         if (id == R.id.action_settings) {
+            openAccessibleSetting();
             return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * 开启辅助功能设置界面
+     */
+    private void openAccessibleSetting() {
+        Intent accessibleIntent = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
+        startActivity(accessibleIntent);
     }
 }

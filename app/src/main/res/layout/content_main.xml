@@ -35,11 +35,12 @@
             android:textSize="20sp"/>
 
         <TextView
-            android:id="@+id/processInfo"
+            android:id="@+id/runningInfo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignBottom="@id/appIcon"
-            android:layout_toRightOf="@id/appIcon"/>
+            android:layout_toRightOf="@id/appIcon"
+            android:text="后台未运行"/>
 
     </RelativeLayout>
 

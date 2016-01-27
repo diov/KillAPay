@@ -7,7 +7,7 @@ import android.view.accessibility.AccessibilityNodeInfo;
 import java.util.List;
 
 /**
- * Description: 辅助类
+ * Description: 通过AccessibleService关闭
  * <p/>
  * Created by dio_v on 下午4:17.
  */
