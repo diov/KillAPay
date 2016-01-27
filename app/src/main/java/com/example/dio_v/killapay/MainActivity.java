@@ -1,18 +1,14 @@
 package com.example.dio_v.killapay;
 
-import android.app.ActivityManager;
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Debug;
 import android.provider.Settings;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.text.format.Formatter;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,9 +17,7 @@ import android.widget.TextView;
 
 import com.example.dio_v.killapay.model.AppInfo;
 import com.example.dio_v.killapay.util.AppHelper;
-import com.example.dio_v.killapay.util.ProcessHelper;
-
-import java.util.List;
+import com.example.dio_v.killapay.util.ForcecloseAccessibilityService;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -50,18 +44,7 @@ public class MainActivity extends AppCompatActivity {
         isInstalled();
 
         // 判断应用是否运行
-        List<ProcessHelper.ProcessInfo> runningProcesses = ProcessHelper.getRunningProcesses();
-        for (ProcessHelper.ProcessInfo processInfo : runningProcesses) {
-            if (TextUtils.equals(processInfo.getPackageName(), packageName)) {
-                int ppid = processInfo.ppid;
-                ActivityManager activityManager = (ActivityManager) this.getSystemService(Context
-                        .ACTIVITY_SERVICE);
-                Debug.MemoryInfo[] info = activityManager.getProcessMemoryInfo(new
-                        int[ppid]);
-                long totalPss = info[0].getTotalPss();
-                memory = Formatter.formatFileSize(this, totalPss);
-            }
-        }
+
 
         // 根据应用是否存在，是否运行初始化View
         initView();
@@ -80,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (isInstall) {
-                    // 根据包名跳转系统自带的应用程序信息界面
+                    // 根据包名跳转系统自带的应用程序信息界面,并自动关闭
                     jumpDetailInfo(packageName);
                 } else {
                     Snackbar.make(view, "App not installed", Snackbar.LENGTH_SHORT)
@@ -92,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void jumpDetailInfo(String packageName) {
+        ForcecloseAccessibilityService.INVOKE_TYPE = ForcecloseAccessibilityService.INVOKE_KILL;
         Intent i = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
         i.setData(Uri.parse("package:" + packageName));
         startActivity(i);
