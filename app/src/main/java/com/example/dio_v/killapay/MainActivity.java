@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
         appIcon = (ImageView) findViewById(R.id.appIcon);
 
         // 判断是否存在应用
-        isInstalled();
+        getAppMsg();
 
         // 根据应用是否存在，是否运行初始化View
         initView();
@@ -60,27 +60,26 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (isInstall) {
-                    if (isRunning) {
-                        if (!AppHelper.isServiceRunning(MainActivity.this, getPackageName())) {
-                            Snackbar.make(view, "服务未开启,请打开", Snackbar.LENGTH_SHORT).setAction("打开",
-                                    new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View v) {
-                                            openAccessibleSetting();
-                                        }
-                                    }).show();
-                        } else {
-                            // 根据包名跳转系统自带的应用程序信息界面,并自动关闭
-                            jumpDetailInfo(packageName);
-                        }
-                    } else {
-                        Snackbar.make(view, "后台未运行,无需关闭", Snackbar.LENGTH_SHORT).show();
-                    }
-                } else {
+                if (!isInstall) {
                     Snackbar.make(view, "应用未安装", Snackbar.LENGTH_SHORT).show();
+                    return;
                 }
-
+                if (!isRunning) {
+                    Snackbar.make(view, "后台未运行,无需关闭", Snackbar.LENGTH_SHORT).show();
+                    return;
+                }
+                if (AppHelper.isServiceRunning(MainActivity.this, getPackageName())) {
+                    // 根据包名跳转系统自带的应用程序信息界面,并自动关闭
+                    jumpDetailInfo(packageName);
+                } else {
+                    Snackbar.make(view, "服务未开启,请打开", Snackbar.LENGTH_SHORT).setAction("打开",
+                            new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    openAccessibleSetting();
+                                }
+                            }).show();
+                }
             }
         });
     }
@@ -97,7 +96,10 @@ public class MainActivity extends AppCompatActivity {
         startActivity(i);
     }
 
-    private void isInstalled() {
+    /**
+     * 获取应用的安装和运行信息
+     */
+    private void getAppMsg() {
         packageName = AppHelper.getPackageName(this, APP_NAME);
         if (TextUtils.isEmpty(packageName)) {
             isInstall = false;

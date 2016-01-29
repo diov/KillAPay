@@ -25,15 +25,13 @@ public class ForcecloseAccessibilityService extends AccessibilityService {
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
         mRootNodeInfo = event.getSource();
-        if (null == mRootNodeInfo) {
+        if (null == mRootNodeInfo || INVOKE_TYPE != INVOKE_KILL) {
             return;
         } else {
-            if (INVOKE_TYPE == INVOKE_KILL) {
-                findAndPerformAction("强行停止");
-                if (event.getEventType() == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED) {
-                    findAndPerformAction("确定");
-                    reset();
-                }
+            findAndPerformAction("强行停止");
+            if (event.getEventType() == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED) {
+                findAndPerformAction("确定");
+                reset();
             }
         }
     }
